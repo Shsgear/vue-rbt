@@ -1,12 +1,15 @@
 <template>
   <div class="index">
-    <el-table :data="robotAccountListData"
-              border 
-              style="width: 100%" 
-              tooltip-effect="dark"
-              >
-      <el-table-column type="selection" width="55">
-      </el-table-column>
+    <el-table 
+      :data="robotAccountListData"
+      border 
+      style="width: 100%" 
+      tooltip-effect="dark"
+    >
+      <el-table-column 
+        type="selection" 
+        width="55"
+      ></el-table-column>
       <el-table-column type="index" label="序号" width="180" sortable></el-table-column>
       <el-table-column prop="account" label="机器人账号" width="180" sortable></el-table-column>
       <el-table-column prop="date" label="创建时间" sortable></el-table-column>
@@ -28,7 +31,7 @@
 
 <script>
 // @ is an alias to /src
-import { get } from '../tools/request';
+// import { get } from '../tools/request';
 
 
 export default {

@@ -6,7 +6,9 @@ module.exports = {
   },
   rules: {
     'no-console': 'off',
-    'no-debugger': 'off'
+    'no-debugger': 'off',
+    'vue/max-attributes-per-line': 'off',
+    'vue/html-self-closing': 'off'
   },
   parserOptions: {
     parser: 'babel-eslint'

@@ -9,13 +9,13 @@ import { Notification } from 'element-ui'
  * @class ConfigError
  */
 class ConfigError {
-  constructor(code, msg) {
-    this.errorEntity = { code, msg };
+  constructor({code, msg, originalMsg = ''}) {
+    this.errorEntity = { code, msg, originalMsg };
   }
   display() {
     Notification({
       title: `Error ${this.errorEntity.code}`,
-      message: this.errorEntity.msg,
+      message: `${this.errorEntity.msg}\n${this.errorEntity.originalMsg}`,
       type: 'error'
     })
   }
@@ -27,6 +27,7 @@ class ConfigError {
 
 // 默认超时时间
 axios.defaults.timeout = 15 * 1000;
+axios.defaults.baseURL = '/SexyRobot';
 
 const { CancelToken } = axios;
 const pending = [];
@@ -60,8 +61,8 @@ axios.interceptors.request.use((config) => {
   });
   // console.log(_config);
   return _config;
-}, () => {
-  const error = new ConfigError(100, '请求配置出错');
+}, (err) => {
+  const error = new ConfigError({code: 100, msg: '请求配置出错', originalMsg: err.message});
   error.display();
   return Promise.reject(error.outputErr);
 });
@@ -74,10 +75,13 @@ axios.interceptors.response.use((res) => {
   if (res.status && parseInt(res.status, 10) === 200) {
     // 接口请求成功
     const {
-      status,
+      code,
       msg,
-      show,
     } = res.data;
+    if (parseInt(code, 10) !== 1) {
+      let error = new ConfigError({code, msg});
+      error.display();
+    }
     return Promise.resolve(res);
   }
   return res;
@@ -85,16 +89,16 @@ axios.interceptors.response.use((res) => {
 (err) => {
   // 接口请求失败
   const { config, message } = err;
-  console.log('err ', err);
+  // console.log('err ', err);
   // 进入此错误处理函数时，若未配置重试选项，则直接reject
   if (!config || !config.retry) {
-    const error = new ConfigError(101, '请求响应出错');
+    const error = new ConfigError({code: 101, msg: `请求响应出错`, originalMsg: message});
     error.display();
     return Promise.reject(error.outputErr);
   }
   // 返回的响应体config message带有“被节流丢弃”的信息
   if (message === 'throttle_abort') {
-    const error = new ConfigError(102, '节流器开启，此请求被丢弃');
+    const error = new ConfigError({code: 102, msg: '节流器开启，此请求被丢弃'});
     error.display();
     return Promise.reject(error.outputErr);
     
@@ -104,8 +108,8 @@ axios.interceptors.response.use((res) => {
 
   // 检查是否超过重试次数
   if (config.__retryCount >= config.retry) {
-    console.log(err.status);
-    const error = new ConfigError(103, `已自动重试"${config.url}" ${config.retry}次，无响应`);
+    // console.log(err.status);
+    const error = new ConfigError({code: 103, msg: `已自动重试"${config.url}" ${config.retry}次，无响应，\nInfo: `, originalMsg: err.message});
     error.display();
     return Promise.reject(error.outputErr);
   }
