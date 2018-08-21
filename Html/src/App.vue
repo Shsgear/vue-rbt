@@ -2,7 +2,7 @@
   <div id="app">
     <el-container>
       <el-header :height="'100px'">
-        <el-row :gutter="10">
+        <el-row :gutter="10" align="middle">
           <el-col :xl="5">
             <div class="grid-content bg-purple">DOBI AutoRobot</div>
           </el-col>
@@ -20,8 +20,9 @@
             </div>
           </el-col>
           <el-col :xl="9">
-            <div class="grid-content bg-purple-light" @click="loginFormVisible = true">
-              登录 / 账户名
+            <div class="grid-content bg-purple-light">
+              <el-button v-if="!isLoggedin" @click="loginFormVisible = true" type="info" plain>登录</el-button>
+              <el-button v-else type="info" plain>{{ adminName }}</el-button>
             </div>
           </el-col>
         </el-row>
@@ -58,6 +59,8 @@
 
 <script>
 import loginData from './mock';
+import { mapGetters, mapActions } from 'vuex';
+
   export default {
     name: 'App',
     components: {
@@ -91,7 +94,19 @@ import loginData from './mock';
         loginBtnisDisable: false
       }
     },
+    computed: {
+      ...mapActions([
+        'loginAction',
+        'logoutAction',
+      ]),
+      ...mapGetters([
+        'isLoggedin',
+        'adminName',
+        'UUID'
+      ])
+    },
     methods: {
+      
       checkLoginForm() {
         this.loginErrTxt = '';
         this.loginError = [];
@@ -118,8 +133,10 @@ import loginData from './mock';
           }, 300);
           let { code, UUID } = res.data;
           if (code == '0') {
+            this.loginFormVisible = false;
             // 保存UUID
-            console.log(UUID);
+            console.log(res);
+            this.loginAction(res.data);
           }
         }).catch(() => {
           this.loginBtnisDisable = false;
@@ -183,6 +200,9 @@ import loginData from './mock';
   .grid-content {
     border-radius: 4px;
     height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .row-bg {

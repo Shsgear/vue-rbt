@@ -78,7 +78,7 @@ axios.interceptors.response.use((res) => {
       code,
       msg,
     } = res.data;
-    if (parseInt(code, 10) !== 1) {
+    if (parseInt(code, 10) !== 0) {
       let error = new ConfigError({code, msg});
       error.display();
     }

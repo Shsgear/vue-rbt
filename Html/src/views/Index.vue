@@ -15,7 +15,7 @@
       <el-table-column prop="date" label="创建时间" sortable></el-table-column>
       <el-table-column prop="status" label="状态" sortable>
         <template slot-scope="scope">
-          <el-switch v-model="scope.row.status" active-color="#13ce66"  inactive-color="#ff4949"  @change=change(scope.$index,scope.row)></el-switch>
+          <el-switch v-model="scope.row.status" active-color="#13ce66" inactive-color="#ff4949" @change=change(scope.$index,scope.row)></el-switch>
         </template>
       </el-table-column>
       <el-table-column label="操作">
